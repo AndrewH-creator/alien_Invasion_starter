@@ -15,3 +15,13 @@ class Settings:
             / 'images'
             / 'Starbasesnow.png'
         )
+
+        self.ship_file = (
+        Path(__file__).resolve().parent
+        / 'Assets'
+        / 'images'
+        / 'ship2(no bg).png'
+    )
+
+        self.ship_w = 40
+        self.ship_h = 60
