@@ -4,7 +4,8 @@ import pygame
 from settings import Settings
 from ship import Ship
 from arsenal import Arsenal
-from alien import Alien
+#from alien import Alien
+from alien_fleet import AlienFleet
 
 class AlienInvasion:
 
@@ -28,8 +29,7 @@ class AlienInvasion:
 
 
 
-        pygame.init()
-        self.settings = Settings()
+       
 
         pygame.mixer.init()
         self.laser_sound = pygame.mixer.Sound(
@@ -39,13 +39,14 @@ class AlienInvasion:
 
         self.arsenal = Arsenal(self)
         self.ship = Ship(self, self.arsenal)
-        self.alien = Alien(self, 10,10)
+        self.alien_fleet = AlienFleet(self)
+    
 
     def run_game(self) -> None:
         while self.running:
             self._check_events()
             self.ship.update()
-            self.alien.update()
+            #self.alien.update()
             self.arsenal.update_bullets()
             self._update_screen()
             self.clock.tick(self.settings.FPS)
@@ -57,7 +58,7 @@ class AlienInvasion:
         self.screen.blit(self.bg, (0, 0))
         self.arsenal.draw_bullets()
         self.ship.draw()
-        self.alien.draw_alien()
+        self.alien_fleet.draw()
         pygame.display.flip()
 
     def _check_events(self) -> None:
