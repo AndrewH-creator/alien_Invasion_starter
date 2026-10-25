@@ -2,16 +2,19 @@
 import sys
 import pygame
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from arsenal import Arsenal
 #from alien import Alien
 from alien_fleet import AlienFleet
+from time import sleep
 
 class AlienInvasion:
 
     def __init__(self) -> None:
         pygame.init()
         self.settings = Settings()
+        self.game_stats = GameStats(self.settings.starting_ship_count)
 
         self.screen = pygame.display.set_mode(
             (self.settings.screen_w, self.settings.screen_h)
@@ -42,14 +45,16 @@ class AlienInvasion:
         self.arsenal = Arsenal(self)
         self.ship = Ship(self, self.arsenal)
         self.alien_fleet = AlienFleet(self)
+        self.game_active = True
     
 
     def run_game(self) -> None:
         while self.running:
             self._check_events()
-            self.ship.update()
-            self.alien_fleet.update_fleet()
-            self._check_collisions()
+            if self.game_active:
+                self.ship.update()
+                self.alien_fleet.update_fleet()
+                self._check_collisions()
             self.arsenal.update_bullets()
             self._update_screen()
             self.clock.tick(self.settings.FPS)
@@ -59,11 +64,11 @@ class AlienInvasion:
 
     def _check_collisions(self) -> None:
         if self.ship.check_collisions(self.alien_fleet.fleet):
-            self._reset_level()
+            self._check_game_status()
 
 
         if self.alien_fleet.check_fleet_bottom():
-            self._reset_level()
+            self._check_game_status()
 
         collisions = self.alien_fleet.check_collisions(self.ship.arsenal.bullets)
         if collisions:
@@ -74,7 +79,15 @@ class AlienInvasion:
             self._reset_level()
         
 
-    
+    def _check_game_status(self) -> None:
+        if self.game_stats.ships_left >0:
+            self.game_stats.ships_left -= 1
+            self._reset_level()
+            sleep(0.5)
+        else:
+            self.game_active = False
+
+       
 
 
     def _reset_level(self) -> None:
