@@ -34,6 +34,11 @@ class AlienInvasion:
         )
         self.laser_sound.set_volume(1.0)
 
+        self.impact_sound = pygame.mixer.Sound(
+            self.settings.impact_sound
+        )
+        self.impact_sound.set_volume(1.0)
+
         self.arsenal = Arsenal(self)
         self.ship = Ship(self, self.arsenal)
         self.alien_fleet = AlienFleet(self)
@@ -44,12 +49,37 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self.alien_fleet.update_fleet()
+            self._check_collisions()
             self.arsenal.update_bullets()
             self._update_screen()
             self.clock.tick(self.settings.FPS)
 
         pygame.quit()
         sys.exit()
+
+    def _check_collisions(self) -> None:
+        if self.ship.check_collisions(self.alien_fleet.fleet):
+            self._reset_level()
+
+
+        if self.alien_fleet.check_fleet_bottom():
+            self._reset_level()
+
+        collisions = self.alien_fleet.check_collisions(self.ship.arsenal.bullets)
+        if collisions:
+            self.impact_sound.play()
+            self.impact_sound.fadeout(500)
+        
+        
+
+
+
+    def _reset_level(self) -> None:
+        self.ship.arsenal.bullets.empty()
+        self.alien_fleet.fleet.empty()
+        self.alien_fleet.create_fleet()
+
+        
 
     def _update_screen(self) -> None:
         self.screen.blit(self.bg, (0, 0))
