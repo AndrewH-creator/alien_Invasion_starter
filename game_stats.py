@@ -17,24 +17,26 @@ class GameStats():
 
     def init_saved_scores(self) -> None:
         self.path = self.settings.scores_file
-        if self.path.exists() and self.path.stat().st_size > 80:
+
+        if self.path.exists() and self.path.stat().st_size > 0:
             contents = self.path.read_text()
             scores = json.loads(contents)
             self.hi_score = scores.get('hi_score', 0)
         else:
             self.hi_score = 0
             self.save_scores()
-            # save the file
 
     def save_scores(self) -> None:
         scores = {
             'hi_score': self.hi_score
         }
         contents = json.dumps(scores, indent=4)
+
         try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
             self.path.write_text(contents)
-        except FileNotFoundError as e:
-            print(f'File Not Found: {e}')
+        except OSError as e:
+            print(f'Error saving scores: {e}')
 
 
     def reset_stats(self):
