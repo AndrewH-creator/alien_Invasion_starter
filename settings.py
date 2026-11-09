@@ -1,5 +1,8 @@
-
 from pathlib import Path
+import json
+
+
+
 
 
 class Settings:
@@ -10,6 +13,7 @@ class Settings:
         self.screen_h = 800
         self.FPS = 60
 
+
         # Find the Assets folder beside this settings.py file
         assets = Path(__file__).resolve().parent / 'Assets'
         images = assets / 'images'
@@ -18,6 +22,7 @@ class Settings:
         self.bg_file = images / 'Starbasesnow.png'
         self.ship_file = images / 'ship2(no bg).png'
         self.difficulty_scale = 1.1
+        self.scores_file = Path.cwd() / 'Assets' / 'file' / 'scores.json'
 
         self.ship_w = 40
         self.ship_h = 60

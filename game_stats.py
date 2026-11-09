@@ -1,8 +1,9 @@
+from pathlib import Path
+import json
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from alien_invasion import AlienInvasion
-
 
 class GameStats():
 
@@ -10,7 +11,31 @@ class GameStats():
         self.game = game
         self.settings = game.settings
         self.max_score = 0
+        self.init_saved_scores()
         self.reset_stats()
+
+
+    def init_saved_scores(self) -> None:
+        self.path = self.settings.scores_file
+        if self.path.exists() and self.path.stat().st_size > 80:
+            contents = self.path.read_text()
+            scores = json.loads(contents)
+            self.hi_score = scores.get('hi_score', 0)
+        else:
+            self.hi_score = 0
+            self.save_scores()
+            # save the file
+
+    def save_scores(self) -> None:
+        scores = {
+            'hi_score': self.hi_score
+        }
+        contents = json.dumps(scores, indent=4)
+        try:
+            self.path.write_text(contents)
+        except FileNotFoundError as e:
+            print(f'File Not Found: {e}')
+
 
     def reset_stats(self):
         self.ships_left = self.settings.starting_ship_count
@@ -22,6 +47,7 @@ class GameStats():
         self._update_score(collisions)
 
         self._update_max_score()
+        self._update_hi_score()
 
     def _update_max_score(self):
         if self.score > self.max_score:
@@ -38,6 +64,11 @@ class GameStats():
 
         # update max_score
         # update hi_score
+
+    def _update_hi_score(self) -> None:
+        if self.score > self.hi_score:
+            self.hi_score = self.score
+        # print(f'Max: {self.max_score}')
 
 
     def update_level(self) -> None:
