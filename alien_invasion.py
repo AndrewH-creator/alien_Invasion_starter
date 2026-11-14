@@ -2,14 +2,15 @@
 import sys
 import pygame
 from settings import Settings
-from game_stats import GameStats
 from ship import Ship
 from arsenal import Arsenal
-#from alien import Alien
-from alien_fleet import AlienFleet
-from time import sleep
-from button import Button
-from hud import HUD
+
+# Milestone 2 and Final Submission features
+# from game_stats import GameStats
+# from alien_fleet import AlienFleet
+# from time import sleep
+# from button import Button
+# from hud import HUD
 
 class AlienInvasion:
 
@@ -30,8 +31,9 @@ class AlienInvasion:
             (self.settings.screen_w, self.settings.screen_h)
         )
 
-        self.game_stats = GameStats(self)
-        self.HUD = HUD(self)
+        # Milestone 1: HUD and scoring disabled
+        # self.game_stats = GameStats(self)
+        # self.HUD = HUD(self)
         self.running = True
         self.clock = pygame.time.Clock()
 
@@ -42,26 +44,37 @@ class AlienInvasion:
         )
         self.laser_sound.set_volume(1.0)
 
-        self.impact_sound = pygame.mixer.Sound(
-            self.settings.impact_sound
-        )
-        self.impact_sound.set_volume(1.0)
+        # Milestone 2: Explosion sound
+        # self.impact_sound = pygame.mixer.Sound(
+        #     self.settings.impact_sound
+        # )
+        # self.impact_sound.set_volume(1.0)
 
         self.arsenal = Arsenal(self)
         self.ship = Ship(self, self.arsenal)
-        self.alien_fleet = AlienFleet(self)
 
-        self.play_button = Button(self, 'Play')
-        self.game_active = False
+        # Milestone 2
+        # self.alien_fleet = AlienFleet(self)
+
+        # Final Submission
+        # self.play_button = Button(self, 'Play')
+
+        # Milestone 1: Game starts immediately
+        self.game_active = True
     
 
     def run_game(self) -> None:
+        """Run the Milestone 1 game loop."""
         while self.running:
             self._check_events()
+
             if self.game_active:
                 self.ship.update()
-                self.alien_fleet.update_fleet()
-                self._check_collisions()
+
+                # Milestone 2 features
+                # self.alien_fleet.update_fleet()
+                # self._check_collisions()
+
             self.arsenal.update_bullets()
             self._update_screen()
             self.clock.tick(self.settings.FPS)
@@ -121,31 +134,44 @@ class AlienInvasion:
             
 
     def _update_screen(self) -> None:
+        """Draw the custom Milestone 1 game assets."""
+
+        # Custom background
         self.screen.blit(self.bg, (0, 0))
+
+        # Custom lasers
         self.arsenal.draw_bullets()
+
+        # Custom spaceship
         self.ship.draw()
-        self.alien_fleet.draw()
-        self.HUD.draw()
-        
 
+        # Milestone 2
+        # self.alien_fleet.draw()
 
-        if not self.game_active:
-            self.play_button.draw()
-            pygame.mouse.set_visible(True)
+        # Final Submission
+        # self.HUD.draw()
+        # if not self.game_active:
+        #     self.play_button.draw()
 
         pygame.display.flip()
 
     def _check_events(self) -> None:
+        """Handle keyboard and window events."""
+
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 self.running = False
-                self.game_stats.save_scores()
-            elif event.type == pygame.KEYDOWN and self.game_active == True:
+
+            elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
+
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                self._check_button_clicked()
+
+            # Final Submission: Play button
+            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            #     self._check_button_clicked()
 
     def _check_button_clicked(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -170,7 +196,6 @@ class AlienInvasion:
                 self.laser_sound.play()
         elif event.key == pygame.K_q:
             self.running = False
-            self.game_stats.save_scores()
             
 
 if __name__ == '__main__':
